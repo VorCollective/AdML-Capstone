@@ -19,7 +19,7 @@ Integrate into the app: Replace the existing prediction logic in the backend (li
 
 
 
-2. Add Geospatial and Path Prediction Features
+### 2. Add Geospatial and Path Prediction Features
 
 Build On: Expand beyond static radii to dynamic path forecasting.
 Advanced ML Ideas:
@@ -27,13 +27,13 @@ Implement graph neural networks (GNNs) or spatial-temporal models (e.g., ST-GCN)
 Use reinforcement learning (RL) for search optimization: Train an agent (e.g., via Stable Baselines3) to simulate search team deployments, rewarding efficient paths that cover high-probability areas with minimal resources.
 Incorporate Bayesian networks for uncertainty modeling, updating probabilities in real-time as new info (e.g., witness sightings) comes in.
 
-Implementation Steps:
+### Implementation Steps:
 Fetch geospatial data: Use libraries like Folium or GeoPandas to visualize and process maps.
 Build a prototype: Start with a simple RL environment where the "state" is current location/weather, "actions" are search directions, and "rewards" are based on historical success rates.
 App Integration: Add a map visualization component (e.g., via Leaflet.js in the frontend) that overlays predicted paths and heatmaps of probability densities.
 
 
-3. Incorporate Multimodal ML for Richer Inputs
+### 3. Incorporate Multimodal ML for Richer Inputs
 
 Build On: Currently text/factor-based; add handling for images, text reports, or sensor data.
 Advanced Techniques:
@@ -41,27 +41,27 @@ Computer Vision (CV): Use pre-trained models like YOLO or Vision Transformers (V
 Natural Language Processing (NLP): Apply transformer models (e.g., BERT or GPT variants) to parse incident reports or witness statements, extracting entities like "last seen near river" to refine location estimates.
 Multimodal Fusion: Combine CV + NLP + tabular data in a model like CLIP or a custom fusion network to generate holistic predictions.
 
-How to Implement:
+### How to Implement:
 Add file upload in the UI (if not present, prompt Lovable or edit code).
 Process with ML: from transformers import pipeline; nlp = pipeline('ner', model='dbmdz/bert-large-cased-finetuned-conll03-english'); entities = nlp(report_text).
 For CV: Use OpenCV/TensorFlow to detect features, then feed into your radius model as additional inputs.
 Edge Computing: For real-time use (e.g., mobile SAR teams), deploy lightweight models via TensorFlow Lite.
 
 
-4. Improve Model Robustness and Deployment
+### 4. Improve Model Robustness and Deployment
 
 Advanced Strategies:
 Federated Learning: If scaling to multiple regions (e.g., beyond UK), train models collaboratively across devices without sharing sensitive data.
 Explainable AI (XAI): Use SHAP or LIME to make predictions interpretable (e.g., "Age factor contributed 40% to the 5km radius"), building trust for rescue teams.
 AutoML: Leverage tools like AutoGluon or H2O.ai to automate hyperparameter tuning and model selection for ongoing improvements.
 
-Deployment Tips:
+### Deployment Tips:
 Host on cloud (e.g., AWS SageMaker or Vercel for Lovable apps) with API endpoints for predictions.
 Monitor performance: Set up logging with MLflow to track model drift (e.g., if weather patterns change due to climate).
 Ethical Considerations: Ensure bias mitigation (e.g., diverse training data across demographics) and privacy (anonymize reports).
 
 
-Potential Challenges and Next Steps
+### Potential Challenges and Next Steps
 
 Data Availability: Source ethical datasets from organizations like the International Commission on Missing Persons or simulate with tools like Faker.
 Compute Resources: Advanced models (e.g., DNNs) need GPUs; start with Google Colab for prototyping.
