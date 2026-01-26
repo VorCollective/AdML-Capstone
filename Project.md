@@ -1,190 +1,107 @@
-# 30-Day Hospital Readmission Risk Prediction for Cancer Patients
+# Capstone Project: Early Prediction of Grade 3+ Chemotherapy Toxicity and Unplanned Hospitalization in Breast Cancer Patients
 
-## Statement of the Problem
-
-Cancer patients frequently experience unplanned hospital readmissions within 30 days of discharge, with rates often ranging from **20% to 30%** in oncology populations — significantly higher than the general inpatient population. These readmissions are commonly driven by:
-
-- Treatment-related complications (e.g., chemotherapy-induced neutropenia leading to febrile episodes, severe nausea/vomiting/dehydration, mucositis, pain crises)
-- Disease progression or recurrence
-- Infections and sepsis
-- Poor symptom control
-- Medication side effects or polypharmacy issues
-- Inadequate post-discharge support and follow-up
-- Comorbid conditions exacerbated by cancer or its treatment
-
-Unplanned readmissions impose a substantial burden on healthcare systems, including:
-
-- Increased healthcare costs (readmissions are expensive and often penalized under value-based care models)
-- Prolonged hospital stays and resource strain on oncology wards
-- Reduced quality of life for patients due to repeated hospitalizations
-- Emotional and financial stress on patients and families
-- Missed opportunities for timely outpatient or palliative care interventions
-
-Despite growing emphasis on reducing avoidable readmissions in oncology care pathways, hospitals and oncology teams still lack reliable, actionable tools to prospectively identify high-risk patients at the time of discharge.
-
-Current risk-stratification approaches often rely on subjective clinical judgment or simple rule-based scores that do not adequately capture the complex, multifactorial nature of readmission risk in cancer patients (e.g., interaction between recent chemotherapy, lab abnormalities, prior utilization patterns, discharge disposition, and social determinants).
-
-**Healthcare Predictive Analytics – Oncology-Specific**  
-Forecasting unplanned 30-day readmission risk in patients with cancer using anonymized clinical data.
-
-**Version**: 3.1 (Cancer Focus with Real Data Guidance)  
+**Version**: Draft 1.0  
 **Date**: January 2026  
 **Author**: L.L  
 **Location**: Nairobi, Kenya
 
----
+## 1. Statement of the Problem
 
-## 1. Project Overview
+Breast cancer patients undergoing chemotherapy face a high risk of severe adverse events, particularly in the early cycles (1–3), where toxicities often peak. Common grade 3+ toxicities include:
 
-### Objective
+- Neutropenia / febrile neutropenia (infection risk)
+- Neuropathy (taxane-related)
+- Mucositis / gastrointestinal toxicity
+- Anemia, thrombocytopenia, fatigue
 
-Develop machine learning models to predict the probability of **unplanned hospital readmission within 30 days** after discharge for **cancer patients**.
+These events lead to:
+- Dose reductions, delays, or treatment discontinuation
+- Unplanned hospitalizations or emergency visits (often 15–30% in the first cycles)
+- Increased morbidity, reduced quality of life, and higher healthcare costs
+- In low-resource settings (e.g., Kenya), limited access to growth factors (G-CSF) or supportive care amplifies the impact
 
-This enables oncology teams to:
-- Identify high-risk patients early
-- Implement targeted interventions (enhanced discharge planning, toxicity monitoring, palliative care coordination, follow-up scheduling)
+Current risk assessment relies on clinical judgment, basic risk scores (e.g., MASCC or CISNE for febrile neutropenia), or trial-derived rules — which are not personalized, miss dynamic factors (serial labs, cumulative dose), and perform modestly in real-world diverse populations.
 
-### Clinical & Business Value
+**Core Problem**  
+There is a need for **accurate, early, personalized risk prediction models** that use routinely collected clinical data (baseline characteristics, serial labs, treatment details) to forecast severe toxicity or unplanned admission **before or during early cycles**, enabling oncologists to:
+- Adjust doses or schedules proactively
+- Initiate prophylactic G-CSF or supportive care
+- Intensify monitoring or switch regimens
+- Optimize resource use in constrained settings
 
-- Cancer patients experience elevated 30-day readmission rates (~20–30%) due to:
-  - Treatment complications (neutropenia, infections, dehydration, pain crises)
-  - Disease progression
-  - Comorbidities and polypharmacy
-- Predictive risk stratification → fewer avoidable readmissions → improved quality of life, reduced healthcare costs, better resource allocation in oncology settings.
-- Aligns with global oncology quality improvement initiatives.
+This is more actionable and urgent than 30-day readmission prediction post-discharge, as it intervenes **during active treatment**.
 
-### Key Challenge
+## 2. Project Objectives
 
-No large-scale, fully public, patient-level dataset exists exclusively for cancer readmission prediction.  
-**Best publicly accessible option**: **MIMIC-IV**, filtered to cancer/neoplasm-related admissions.
+Primary:
+- Build and validate ML models to predict the composite outcome of **grade 3+ toxicity or unplanned hospitalization** within the first 2–3 chemotherapy cycles in breast cancer patients.
 
-> **Important Disclaimer**  
-> This project is for **educational and research purposes only**.  
-> Models are **not clinically validated** and must **never** be used for direct patient care without prospective multi-site validation, IRB/ethical approval, bias/fairness audits, and full regulatory compliance (e.g., Data Protection Act – Kenya).
+Secondary:
+- Identify key predictive features (e.g., serial neutrophil trends, cumulative dose, baseline frailty, comorbidities)
+- Provide interpretable risk scores and personalized intervention recommendations
+- Evaluate model fairness across age, socioeconomic proxies, and treatment settings
+- Assess feasibility for low-resource deployment (e.g., simple features, minimal compute)
 
----
+## 3. Why This Is a Strong Capstone Idea
 
-## 2. Recommended Dataset: MIMIC-IV
+- **Higher clinical urgency & actionability** — Predictions occur during treatment (not after discharge), allowing real-time adjustments
+- **Novelty** — Less saturated than general readmission models; focuses on early-cycle dynamics and serial data
+- **Technical depth** — Opportunity for time-series modeling (lab trends), multi-task learning (toxicity + admission), SHAP explainability, fairness audits
+- **Relevance to Kenya/LMICs** — Chemotherapy toxicity is a major barrier to completing curative treatment in resource-limited settings; models can highlight when G-CSF or supportive care would be most cost-effective
+- **Publishable potential** — Aligns with recent trends in precision oncology toxicity prediction (2023–2025 papers on ML for febrile neutropenia, etc.)
 
-**Medical Information Mart for Intensive Care IV**  
-- **Source**: https://physionet.org/content/mimiciv/ (v2.2+ recommended)  
-- **Access**: Free after completing CITI “Data or Specimens Only Research” training (~2–3 hours) + signing Data Use Agreement  
-- **Size**: ~524,000 admissions (2008–2019)  
-- **Cancer cohort size**: ~10,000–30,000 relevant encounters after filtering (depending on inclusion criteria)  
-- **Target**: Binary unplanned 30-day readmission (engineered from admission timestamps; exclude planned readmissions where possible)  
-- **Typical readmission rate in filtered cancer subset**: 20–28%
+## 4. Data Sources & Feasibility
 
-### Why MIMIC-IV for Cancer Readmission?
+Primary public option:
+- **MIMIC-IV** (PhysioNet) — Filter to breast cancer admissions (ICD-10 C50.*, D05.*) with chemotherapy administration (HCPCS/CPT codes or medication tables)
+  - Strengths: Rich labs (serial CBC, neutrophils), vitals, medications, procedures, outcomes
+  - Challenge: Chemotherapy cycles may need reconstruction from timestamps/meds; toxicity grades inferred from labs/admissions (e.g., ANC <1.0 × 10⁹/L for severe neutropenia)
 
-- Rich structured data: labs (neutrophils, CRP, albumin, creatinine), medications (chemo agents, antibiotics, opioids), procedures (central lines, biopsies, radiation), diagnoses/procedures (ICD codes), length of stay, discharge disposition, prior admissions/ED visits  
-- Widely used in 2023–2025 oncology and critical care readmission studies
+Augmentation strategies:
+- Synthetic data generation (e.g., CTGAN or Gaussian Copula) based on MIMIC patterns or literature-reported toxicity rates in breast cancer cohorts
+- Public breast cancer datasets with treatment outcomes (limited):  
+  - TCGA-BRCA (genomic/clinical) — limited toxicity data, but useful for baseline features
+  - METABRIC or other curated cohorts (cBioPortal) — some treatment/response data
+  - Literature-derived synthetic cohorts (simulate based on known risk factors from papers)
 
-### Quick Cohort Filtering Example (Pandas)
+Target cohort size goal: 1,000–5,000 breast cancer chemotherapy encounters (feasible after filtering MIMIC-IV + augmentation)
 
-```python
-import pandas as pd
+Outcome definition (binary or multi-label):
+- Grade 3+ toxicity: Inferred from labs (e.g., neutropenia ANC <1.0), admissions for fever/infection, or medication changes
+- Unplanned hospitalization: New admission within 21–30 days after cycle start (exclude planned)
 
-diagnoses = pd.read_csv('mimiciv/hosp/diagnoses_icd.csv.gz')
+## 5. Modeling Approach
 
-# Rough neoplasm filter (ICD-10: C*, D0*; ICD-9: 140–239)
-cancer_mask = (
-    diagnoses['icd_code'].str.startswith(('C', 'D0')) |
-    ((diagnoses['icd_version'] == 9) & diagnoses['icd_code'].between('140', '239'))
-)
+| Model Type                | Why Suitable                                      | Expected Performance (Literature) |
+|---------------------------|---------------------------------------------------|-----------------------------------|
+| Logistic Regression       | Baseline, interpretable odds ratios               | AUC 0.65–0.75                     |
+| XGBoost / LightGBM        | Handles imbalance, tabular data, feature importance | AUC **0.75–0.85** (common top)  |
+| Random Forest             | Robust to missing, non-linear interactions        | AUC 0.72–0.82                     |
+| LSTM / Time-Series Models | Captures serial lab trends (neutrophil trajectories) | AUC 0.78–0.88 (if time-series strong) |
 
-cancer_hadm_ids = diagnoses[cancer_mask]['hadm_id'].unique()
-print(f"Found {len(cancer_hadm_ids):,} cancer-related hospital admissions")
-```
-Fallback options if MIMIC access is delayed:
+Key techniques:
+- Class imbalance handling: scale_pos_weight, SMOTE, focal loss
+- Feature engineering: Cumulative dose, lab deltas, frailty proxies (age + comorbidities)
+- Explainability: SHAP values → highlight actionable factors (e.g., "baseline ANC <3.5 → high risk")
+- Fairness: Demographic parity checks, re-weighting
 
-MIMIC-III (older but similar): https://physionet.org/content/mimiciii/
-Synthetic/general hospital readmission datasets on Kaggle (augment with simulated cancer features)
+Output format:
+- Risk probability + risk category (low/medium/high)
+- Personalized recommendations (e.g., "Consider G-CSF prophylaxis", "Increase monitoring frequency")
 
-### 3. Preprocessing & Feature Engineering (Oncology Emphasis)
-High-Impact Features from Literature
+## 6. Expected Challenges & Mitigations
 
-| Category              | Examples of Strong Predictors                                      | Why Important in Cancer Readmission                          |
-|-----------------------|--------------------------------------------------------------------|--------------------------------------------------------------|
-| Prior Utilization     | Number of prior admissions / ED visits                             | Strongest overall predictor                                  |
-| Laboratory Values     | Neutrophil count, hemoglobin, albumin, creatinine, CRP/ESR         | Infection, toxicity, malnutrition risk                       |
-| Treatment-related     | Recent chemotherapy/radiation, medication changes                  | Chemo toxicity, post-procedure complications                 |
-| Disease Status        | Metastatic status, Charlson comorbidity index                      | Advanced disease increases readmission likelihood            |
-| Discharge             | Home vs facility vs palliative/hospice                             | Social support & follow-up capability                        |
-| Demographics          | Age, derived performance status proxy                              | Frailty and physiological reserve                            |
+- Data sparsity (toxicity grading not explicit) → Use proxy outcomes from labs/admissions
+- Limited breast cancer specificity in MIMIC → Augment with synthetic data + literature validation
+- Generalizability → Stratify models by regimen (taxane vs anthracycline) if possible
 
+## 7. Next Steps
 
-Recommended Steps
-
-Filter cohort using neoplasm ICD codes
-Handle sparse labs/vitals: last observation carried forward (LOCF) per admission or median imputation
-Create oncology-specific flags:
-recent_chemo (≤30 days)
-neutropenia_risk (low neutrophils + recent chemo)
-metastatic (ICD codes indicating spread)
-
-Address class imbalance (~20–30% positive): class weights, SMOTE, focal loss
-
-### 4. Modeling Approaches & Expected Performance
-
-| Model               | Strengths in Oncology Context                          | Expected AUC (Filtered MIMIC / Cancer Cohorts)      |
-|---------------------|--------------------------------------------------------|-----------------------------------------------------|
-| Logistic Regression | Interpretable odds ratios (chemo, labs, mets)          | 0.65 – 0.75                                         |
-| XGBoost / LightGBM  | Excellent on tabular data + imbalance                  | 0.72 – 0.82 (frequent top performer)                |
-| Random Forest       | Robust to missing values & non-linearity               | 0.70 – 0.78                                         |
-| Neural Network      | Captures complex feature interactions                  | 0.68 – 0.80                                         |
+1. Obtain MIMIC-IV access and filter breast cancer + chemotherapy cohort
+2. Define exact outcome labels and perform exploratory analysis
+3. Prototype baseline XGBoost model
+4. Add time-series features and compare performance
+5. Implement SHAP + fairness evaluation
 
 
-Evaluation focus:
 
-Primary: AUC-ROC
-Secondary: Precision-Recall AUC, F1-score (at chosen threshold), calibration plots
-Validation: Stratified / temporal cross-validation + hold-out set
-
-
-### 5. Starter Modeling Code (XGBoost)
-```
-from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score
-
-# Assume X (features), y (readmitted_30d binary) are prepared
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.20, stratify=y, random_state=42
-)
-
-scale_pos_weight = (len(y_train) - y_train.sum()) / y_train.sum()
-
-model = XGBClassifier(
-    scale_pos_weight=scale_pos_weight,
-    eval_metric='auc',
-    random_state=42,
-    n_estimators=200,
-    learning_rate=0.05,
-    max_depth=6
-)
-
-model.fit(X_train, y_train)
-
-probs = model.predict_proba(X_test)[:, 1]
-print(f"Test AUC: {roc_auc_score(y_test, probs):.4f}")
-```
-### 6. Next Steps & Recommendations
-
-Obtain MIMIC-IV access and construct cancer cohort
-Add SHAP / permutation importance for explainability
-Hyperparameter tuning (Optuna, Hyperopt)
-Build interactive demo (Streamlit / Gradio)
-Explore temporal validation and external generalizability
-
-
-### 7. Limitations & Ethical Considerations
-
-MIMIC-IV is US / ICU-centric → potential bias toward severe cases
-Historical data (up to 2019) → does not reflect newer therapies (e.g., widespread immunotherapy, CAR-T)
-No clinical deployment without prospective validation in diverse settings (including low- and middle-income countries)
-
-
-### References
-
-MIMIC-IV: https://physionet.org/content/mimiciv/
-Recent studies: MIMIC-based oncology / readmission prediction papers (2023–2025)
