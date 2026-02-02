@@ -56,7 +56,7 @@ Primary public option:
 - **MIMIC-IV** (PhysioNet) — Filter to breast cancer admissions (ICD-10 C50.*, D05.*) with chemotherapy administration (HCPCS/CPT codes or medication tables)
   - Strengths: Rich labs (serial CBC, neutrophils), vitals, medications, procedures, outcomes
   - Challenge: Chemotherapy cycles may need reconstruction from timestamps/meds; toxicity grades inferred from labs/admissions (e.g., ANC <1.0 × 10⁹/L for severe neutropenia)
-  - https://huggingface.co/datasets
+  - [https://huggingface.co/datasets](https://huggingface.co/datasets/electricsheepafrica/ssa-chemotherapy-response)
 
 Augmentation strategies:
 - Synthetic data generation (e.g., CTGAN or Gaussian Copula) based on MIMIC patterns or literature-reported toxicity rates in breast cancer cohorts
